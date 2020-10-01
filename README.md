@@ -8,5 +8,3 @@ As primeiras versões vão ser feitas utilizando a API do Telegram, mas posterio
 Conhecimentos novos para min: Utilizar e abusar de clean code; me forçando a pesquisar sobre design paterns, usar o conceito de TDD (até agora não foi muito utilizado rsrsrs) mas mudar esse hábito, codar em ingles principalmente por se tratar de tecnologias que não tem muita documentação em português, usar da programção orientada a objetos pensando em um projeto escalável.
 
 Tecnologias utilizadas: API Telegram, API Twilio/WhatsApp, requests.
-
-=======
