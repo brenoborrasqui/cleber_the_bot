@@ -1,5 +1,4 @@
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
-
 from conf.settings import TELEGRAM_TOKEN
 
 import logging
@@ -29,17 +28,26 @@ def echo(update, context):
 
 
 def wiki(update, context):
-    query = context.args
+    query = str(" ".join(context.args))
 
-    query = str(" ".join(query))
-
-    text = quest.wiki()
-    text.search(query)
+    text = quest.search().wiki(query)
 
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=str(text)
+        text="Sugestão: " + text['sugestão'] + ".\n\nPesquisa: " + text['pesquisa']
     )
+
+
+def defi(update, context):
+    query = str(" ".join(context.args))
+
+    text = quest.search().dicio(query)
+
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text
+    )
+
 
 def unknown(update, context):
     response_message = "Não entendi o que você deseja"
@@ -64,6 +72,10 @@ def main():
 
     dispatcher.add_handler(
         CommandHandler('wiki', wiki)
+    )
+
+    dispatcher.add_handler(
+        CommandHandler('defi', defi)
     )
 
     dispatcher.add_handler(

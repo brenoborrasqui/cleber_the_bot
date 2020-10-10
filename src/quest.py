@@ -1,28 +1,47 @@
+from bs4 import BeautifulSoup
+from unicodedata import normalize
+
+import requests
 import wikipedia
 
+erro = """Você acessou uma palavra que já não existe ou está procurando uma página que mudou de endereço."""
 
-class wiki():
+
+class search():
 
     def __init__(self):
-        super(wiki, self).__init__()
+        super(search, self).__init__()
         self.query = ""
-        self.summary = ""
         self.suggest = ""
+        self.content = ""
 
-    def search(self, query):
+    def wiki(self, query):
 
-        self.query = query
+        self.query = query.lower()
 
         wikipedia.set_lang("pt")
 
-        self.suggest = wikipedia.search(self.query, results=3)
+        self.suggest = str(", ".join([i.lower() for i in wikipedia.search(self.query, results=3)]))
 
-        self.suggest = [i.lower() for i in self.suggest]
+        if self.query in self.suggest:
+            self.content = wikipedia.summary(self.query, sentences=2)
 
-        if str(self.query) in self.suggest:
-            self.summary = wikipedia.summary(self.query, sentences=2)
+        return {"sugestão": self.suggest,
+                "pesquisa": self.content
+                }
 
-        self.suggest = str(self.suggest)
+    def dicio(self, query):
 
-    def __repr__(self):
-        return 'Sugestão: {}\n\nPesquisa: {}'.format(self.suggest, self.summary)
+        self.query = (normalize('NFKD', query).encode('ASCII', 'ignore').decode('ASCII')).lower()
+
+        html = requests.get("https://www.dicio.com.br/" + self.query)
+
+        bsObj = BeautifulSoup(html.text, "html.parser")
+
+        self.content = str(bsObj.p.get_text()).capitalize()
+
+        if self.content == erro:
+            self.suggest = [i.get_text() for i in bsObj.find_all("a", "_sugg")]
+            return "Você quis dizer: {}".format(", ".join(self.suggest))
+        else:
+            return self.content
